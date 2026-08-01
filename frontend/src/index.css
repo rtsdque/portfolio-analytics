@@ -1,0 +1,377 @@
+@import 'tailwindcss';
+
+/* ============================================================================
+   DESIGN TOKENS
+
+   Dark-only by design, but every colour is a variable rather than a literal, so
+   a light theme later is a second :root block instead of a rewrite.
+
+   The one rule that governs everything below: COLOUR THAT CARRIES DATA MEANING
+   IS NEVER REUSED AS DECORATION.
+
+     --color-gain / --color-loss  belong to money moving up or down. Nothing else.
+     --color-zone-*               belong to credit standing. Deliberately teal /
+                                  amber / rose rather than green / red so a credit
+                                  grade can never be misread as a return.
+     --color-accent               is interactive chrome — buttons, focus, links.
+                                  Violet, so it can never be confused with either.
+
+   The moment a green button sits next to a green number, the user has to stop
+   and work out which green is which, and the interface stops being trustworthy.
+   ========================================================================= */
+
+@theme {
+  /* --- surfaces ------------------------------------------------------- */
+  --color-base: #08080f;
+  --color-raised: #0d0d1a;
+  --color-sunken: #05050a;
+
+  --color-surface-1: #101020;
+  --color-surface-2: #16162b;
+  --color-surface-3: #1d1d38;
+
+  --color-line-faint: #ffffff0a;
+  --color-line: #ffffff14;
+  --color-line-strong: #ffffff24;
+
+  /* --- text ----------------------------------------------------------- */
+  --color-ink: #f4f4f8;
+  --color-ink-muted: #a2a2bd;
+  --color-ink-faint: #6a6a86;
+  --color-ink-ghost: #45455c;
+
+  /* --- interactive (violet) ------------------------------------------- */
+  --color-accent: #6d5ae6;
+  --color-accent-bright: #8b7bf0;
+  --color-accent-deep: #5443c2;
+  --color-accent-ink: #c9c0ff;
+
+  /* --- wealth accent (gold) -------------------------------------------
+     Muted on purpose. Saturated gold on dark navy reads as casino rather
+     than private bank. Reserved for emphasis moments, never for surfaces. */
+  --color-gilt: #c9a961;
+  --color-gilt-bright: #e0c485;
+
+  /* --- data: direction of money ---------------------------------------
+     Balanced for perceived brightness on a dark ground. A naive #00FF00 /
+     #FF0000 pair makes gains glow and losses recede, which quietly biases how
+     a portfolio reads. These two sit at comparable luminance, and gain is held
+     slightly lighter than loss so the pair still separates in greyscale for
+     red-green colour blindness. Colour is never the only channel: every figure
+     also carries a sign and an arrow. */
+  --color-gain: #3ddc97;
+  --color-gain-dim: #3ddc9722;
+  --color-loss: #ff6b6b;
+  --color-loss-dim: #ff6b6b22;
+  --color-flat: #8b8ba7;
+
+  /* --- credit standing -------------------------------------------------
+     zone-safe was teal #4ecdc4 until the palette validator measured it at
+     ΔE 8.8 from gain green under normal vision — below the 15 floor, i.e.
+     genuinely hard to tell apart. That defeated the whole point of keeping the
+     scales separate, so it was re-stepped to blue at ΔE 18.8.
+
+     zone-distress still sits close to loss red (ΔE 5.9). These two never share
+     a view — the Credit Lab shows no gain/loss figures — and the zone label is
+     always rendered beside the colour, which is the documented mitigation for
+     a status hue near a data hue. Do not introduce gain/loss figures onto the
+     Credit Lab without re-stepping this first. */
+  --color-zone-safe: #3fb0e0;
+  --color-zone-grey: #e8b04b;
+  --color-zone-distress: #e85d75;
+
+  /* --- chart marks -----------------------------------------------------
+     Separate steps from the text colours above, and not interchangeable with
+     them. Text on a dark ground wants high lightness; chart marks want OKLCH
+     L 0.48-0.67, and the text steps measured 0.71-0.80 — too light to sit as
+     fills. Every value here is validated against the card surface #101020.
+
+     viz-1 ↔ viz-2 pass all-pairs at CVD ΔE 29.4. Blue was the intuitive second
+     series and failed at 5.8 against violet, which is why these are measured
+     rather than chosen. */
+  --color-viz-1: #7d6bea;
+  --color-viz-2: #c96f22;
+  --color-viz-loss: #e85555;
+
+  /* Diverging poles for correlation: warm/cool so the two sides read as
+     opposite. Never green/red here — correlation is not profit and loss.
+
+     The midpoint is a true neutral. It was #3a3a52 (violet-tinted, to match the
+     surrounding surfaces) and that was wrong: a weak positive correlation of
+     0.12 rendered visibly blue, so near-zero values looked like they belonged
+     to the cool arm. A diverging midpoint has to read as "nothing", which means
+     no hue in it at all. */
+  --color-viz-cool: #4a8fe0;
+  --color-viz-warm: #c96f22;
+  --color-viz-mid: #3b3b3d;
+
+  --color-grid: #ffffff12;
+  --color-axis: #ffffff1f;
+
+  /* --- disclosure levels ----------------------------------------------- */
+  --color-note: #6a8cc4;
+  --color-warn: #e8b04b;
+  --color-block: #e85d75;
+
+  /* --- type ------------------------------------------------------------ */
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+
+  /* --- radius ---------------------------------------------------------- */
+  --radius-card: 14px;
+  --radius-control: 10px;
+
+  /* --- motion ----------------------------------------------------------
+     Four speeds only. More than that and timing stops feeling like one hand
+     made it. */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+:root {
+  --dur-tap: 90ms;
+  --dur-quick: 180ms;
+  --dur-base: 280ms;
+  --dur-slow: 620ms;
+
+  --shadow-lift: 0 1px 2px #00000060, 0 8px 24px -8px #00000080;
+  --shadow-float: 0 2px 4px #00000070, 0 20px 48px -12px #000000a0;
+  --glow-accent: 0 0 0 1px #6d5ae63d, 0 0 32px -4px #6d5ae64d;
+
+  color-scheme: dark;
+}
+
+/* ============================================================================
+   BASE
+   ========================================================================= */
+
+html {
+  background: var(--color-base);
+}
+
+body {
+  margin: 0;
+  background: var(--color-base);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Every figure in a table or metric uses tabular figures. Without this,
+   proportional digits make columns of numbers ragged and, worse, make a value
+   visibly shift width as it updates. */
+.tabular,
+table,
+[data-numeric] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+.font-display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Focus is never removed, only restyled. Keyboard users need to see it. */
+:focus-visible {
+  outline: 2px solid var(--color-accent-bright);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-3);
+  border-radius: 999px;
+  border: 2px solid var(--color-base);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-line-strong);
+}
+
+/* ============================================================================
+   AMBIENT LAYER
+
+   Everything here animates `transform` or `opacity` and nothing else. Those two
+   are handled by the compositor without layout or paint; animating box-shadow,
+   filter, or gradient stops forces a repaint of the layer every frame, which is
+   precisely where ambient effects turn into jank — and this page has live
+   figures on it, so dropped frames show up as numbers stuttering.
+   ========================================================================= */
+
+.ambient-orb {
+  position: absolute;
+  display: block;
+  border-radius: 50%;
+  filter: blur(90px);
+  will-change: transform;
+}
+
+.ambient-orb--violet {
+  top: -22vh;
+  left: -14vw;
+  width: 62vw;
+  height: 62vw;
+  background: radial-gradient(circle, #6d5ae63d 0%, #6d5ae600 68%);
+  animation: orb-drift-a 46s var(--ease-in-out-soft) infinite;
+}
+
+.ambient-orb--gilt {
+  right: -20vw;
+  bottom: -28vh;
+  width: 52vw;
+  height: 52vw;
+  background: radial-gradient(circle, #c9a9611f 0%, #c9a96100 66%);
+  animation: orb-drift-b 61s var(--ease-in-out-soft) infinite;
+}
+
+/* Mismatched, non-integer-ratio durations so the two never visibly resync. */
+@keyframes orb-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(7vw, 5vh, 0) scale(1.1);
+  }
+}
+
+@keyframes orb-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.06);
+  }
+  50% {
+    transform: translate3d(-6vw, -4vh, 0) scale(1);
+  }
+}
+
+/* --- glass ---------------------------------------------------------------
+   backdrop-filter is the single most expensive thing here, so it is confined
+   to fixed chrome — the sidebar — and never applied to cards in a scrolling
+   list, where the blur would be recomputed for every row on every frame. */
+.glass {
+  background: color-mix(in oklab, var(--color-raised) 72%, transparent);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+}
+
+/* --- pointer sheen -------------------------------------------------------
+   A radial highlight following the cursor. The gradient is painted once into a
+   pseudo-element and only its opacity changes; the position rides two custom
+   properties updated at most once per frame. */
+.sheen {
+  position: relative;
+  isolation: isolate;
+}
+
+.sheen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out-soft);
+  background: radial-gradient(
+    380px circle at var(--px, 50%) var(--py, 50%),
+    #8b7bf014,
+    transparent 62%
+  );
+}
+
+.sheen:hover::before {
+  opacity: 1;
+}
+
+/* A hairline that brightens on hover — the "glass reflection" catch. */
+.sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out-soft);
+  background: linear-gradient(140deg, #ffffff26, transparent 42%, #ffffff0f);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+}
+
+.sheen:hover::after {
+  opacity: 1;
+}
+
+/* --- scroll reveal -------------------------------------------------------
+   The hiding is scoped to html[data-reveal-capable], which main.jsx sets
+   synchronously before React mounts. This inversion matters: content must never
+   be hidden by default and then depend on something else to bring it back. If
+   the script fails, the attribute is absent, no rule matches, and everything is
+   simply visible.
+
+   Removing `data-reveal` from an element also drops it out of this rule
+   entirely — that is the failsafe path in useReveal, and it works even where a
+   CSS transition would never advance (a non-compositing tab will happily set
+   opacity:1 and never animate toward it). */
+html[data-reveal-capable] [data-reveal]:not([data-revealed='true']) {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+}
+
+[data-reveal] {
+  transition:
+    opacity var(--dur-slow) var(--ease-out-soft),
+    transform var(--dur-slow) var(--ease-out-soft);
+}
+
+/* ============================================================================
+   REDUCED MOTION
+
+   Not a nicety. Ambient drift and parallax cause real nausea for people with
+   vestibular disorders, so when the OS asks for less motion the star field and
+   every ambient animation stop outright rather than merely slowing down.
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-ambient] {
+    display: none !important;
+  }
+
+  /* Revealed content must never stay hidden just because its animation was
+     switched off. */
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

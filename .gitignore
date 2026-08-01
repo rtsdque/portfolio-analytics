@@ -1,0 +1,35 @@
+# --- secrets -----------------------------------------------------------
+# .env holds live Alpaca API credentials. Never commit it; backend/.env.example
+# documents the required keys with placeholder values instead.
+.env
+.env.*
+!.env.example
+
+# --- python ------------------------------------------------------------
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# --- local caches ------------------------------------------------------
+# Cached public market and filing data. Regenerated on demand; nothing here is
+# user data, but it is large and machine-specific.
+*.db
+*.sqlite3
+
+# --- node / vite -------------------------------------------------------
+node_modules/
+dist/
+.vite/
+coverage/
+*.local
+
+# --- editors & os ------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
