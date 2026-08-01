@@ -17,9 +17,14 @@ filing data only.
 
 ## Stack
 
-**Backend** — FastAPI, pandas, NumPy, SciPy, SQLAlchemy + Alembic-ready schema.
-The analytics core is pure functions over passed-in data with no I/O, so every
-calculation is testable offline.
+**Backend** — FastAPI, pandas, NumPy, SciPy, SQLAlchemy. The analytics core is
+pure functions over passed-in data with no I/O, so every calculation is testable
+offline.
+
+There are deliberately no migrations. The only database is a cache of public
+market and filing data — it holds nothing that cannot be re-fetched, so the
+schema is created on startup and the file can be deleted at any time. Swapping
+SQLite for Postgres in production is a `DATABASE_URL` change and nothing else.
 
 **Frontend** — React 19, Vite, Tailwind CSS 4. Charts are hand-built inline SVG
 rather than a charting library — the point was control over mark specs,
