@@ -15,8 +15,6 @@ No accounts, no tracking, no server-side user data. Your portfolio lives in your
 browser's `localStorage`; the backend database is a cache of public market and
 filing data only.
 
----
-
 ## Stack
 
 **Backend** — FastAPI, pandas, NumPy, SciPy, SQLAlchemy + Alembic-ready schema.
@@ -28,8 +26,6 @@ rather than a charting library — the point was control over mark specs,
 accessibility, and downsampling behaviour.
 
 **Data** — Alpaca for prices, SEC EDGAR for fundamentals. Both free.
-
----
 
 ## Why these data sources
 
@@ -43,8 +39,6 @@ financial statements at all, so the Credit Lab could not be built on it. EDGAR
 is the filings themselves: free, keyless, unlimited, and complete back a decade.
 Sector classification falls out of the SIC codes already being fetched for
 free — coarser than GICS, and labelled as such in the UI.
-
----
 
 ## Analytics
 
@@ -77,8 +71,6 @@ and can show their work:
   could not be judged from a filer's tagged data is never mistaken for a signal
   that failed.
 
----
-
 ## Design notes
 
 **Colour that carries data meaning is never reused as decoration.** Gain/loss
@@ -102,8 +94,6 @@ tool untrustworthy.
 **Motion is opt-out and cheap.** Ambient effects animate only `transform` and
 `opacity`; `backdrop-filter` is confined to fixed chrome. `prefers-reduced-motion`
 stops the animation loops outright rather than merely hiding their output.
-
----
 
 ## Running it
 
@@ -132,8 +122,6 @@ Open http://localhost:5173.
 `SEC_USER_AGENT` must be a real contact string (`Name email@example.com`) — the
 SEC returns 403 for requests that do not identify the caller.
 
----
-
 ## Tests
 
 ```bash
@@ -160,8 +148,6 @@ validator, and are worth reading as documentation of the traps:
   rather than zero, and an information ratio of −0.81 out of pure noise.
 - The SEC writes share classes as `BRK-B` where quote vendors write `BRK.B`, so
   every dual-class company was reported as "not an SEC filer".
-
----
 
 ## Disclaimer
 
